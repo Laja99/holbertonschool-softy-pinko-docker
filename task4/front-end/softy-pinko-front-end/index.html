@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Softy Pinko - Task 4</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1 id="dynamic-content">Loading...</h1>
+    <script>
+        $(function() {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:5252/api/hello",
+                success: function(data) {
+                    $('#dynamic-content').text(data);
+                },
+                error: function(err) {
+                    $('#dynamic-content').text("Error connecting to API");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
