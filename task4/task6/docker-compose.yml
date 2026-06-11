@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    container_name: softy-pinko-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: softy_pinko_db
+      MYSQL_USER: pinko_user
+      MYSQL_PASSWORD: pinko_password
+    volumes:
+      - db_data:/var/lib/mysql
+
+  back-end:
+    build: ./back-end
+    image: softy-pinko-back-end:task6
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: pinko_user
+      DB_PASSWORD: pinko_password
+      DB_NAME: softy_pinko_db
+
+  front-end:
+    build: ./front-end
+    image: softy-pinko-front-end:task6
+
+  proxy:
+    build: ./proxy
+    image: softy-pinko-proxy:task6
+    ports:
+      - "80:80"
+    depends_on:
+      - back-end
+      - front-end
+
+volumes:
+  db_data: # هذا الـ Volume يضمن استمرارية حفظ بيانات المستخدمين والقاعدة
