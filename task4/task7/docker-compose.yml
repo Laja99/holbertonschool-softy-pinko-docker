@@ -1,0 +1,44 @@
+version: '3.8'
+
+networks:
+  front-network: # شبكة عامة للوجوه الأمامية والبروكسي
+  back-network:  # شبكة معزولة ومحمية للباك إند وقاعدة البيانات
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: softy-pinko-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: softy_pinko_db
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - back-network # متصلة فقط بالشبكة الخلفية المعزولة
+
+  back-end:
+    build: ./back-end
+    image: softy-pinko-back-end:task7
+    networks:
+      - front-network # متصلة بالشبكتين لتلعب دور الوسيط
+      - back-network
+
+  front-end:
+    build: ./front-end
+    image: softy-pinko-front-end:task7
+    networks:
+      - front-network
+
+  proxy:
+    build: ./proxy
+    image: softy-pinko-proxy:task7
+    ports:
+      - "80:80"
+    networks:
+      - front-network
+    depends_on:
+      - back-end
+      - front-end
+
+volumes:
+  db_data:
